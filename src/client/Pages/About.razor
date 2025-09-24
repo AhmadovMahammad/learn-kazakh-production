@@ -1,0 +1,137 @@
+﻿@page "/about"
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-8 mt-2">
+    <!-- Page Title -->
+    <MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6" Style="font-weight: 600">
+        Haqqımda
+    </MudText>
+
+    <!-- Hero Section -->
+    <MudCard Class="mb-6" Style="border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <MudCardContent Class="pa-6">
+            <MudGrid AlignItems="Center" Spacing="4">
+                <MudItem xs="12" md="3" Class="text-center">
+                    @* <MudAvatar Size="Size.Large" Style="width: 120px; height: 120px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                        <MudIcon Icon="Icons.Material.Filled.Person" Size="Size.Large" Style="font-size: 60px;" />
+                    </MudAvatar> *@
+
+                    <MudAvatar Size="Size.Large" Style="width: 200px; height: 200px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                        <MudImage Src="images/avatar.png"/>
+                    </MudAvatar>
+                </MudItem>
+                <MudItem xs="12" md="9">
+                    <MudText Typo="Typo.h4" Class="mb-2" Style="font-weight: 600; color: #1c398e;">
+                        Mahammad Ahmadov
+                    </MudText>
+                    <MudText Typo="Typo.h6" Class="mb-3" Style="color: #364153;">
+                        Software Developer & Language Learning Enthusiast
+                    </MudText>
+                    <MudText Typo="Typo.body1" Class="mb-4" Style="line-height: 1.6; color: #6a7282;">
+                        Qazax dilini öyrənmək və Türk xalqları arasında daha güclü ünsiyyət qurmaq məqsədilə bu platformanı yaratmışam.
+                        Mənim üçün hər yeni dil - yeni insanlarla, yeni fikirlərlə tanış olmaq fürsətidir.
+                    </MudText>
+                    <MudStack Row Spacing="2">
+                        <MudButton Variant="Variant.Outlined" 
+                                 StartIcon="@Icons.Custom.Brands.GitHub" 
+                                 Color="Color.Primary" 
+                                 Href="https://github.com/AhmadovMahammad" 
+                                 Target="_blank"
+                                 Style="text-transform: none; border-radius: 8px;">
+                            GitHub
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" 
+                                 StartIcon="@Icons.Custom.Brands.LinkedIn" 
+                                 Color="Color.Info" 
+                                 Href="https://www.linkedin.com/in/mahammad-ahmadov-dev/" 
+                                 Target="_blank"
+                                 Style="text-transform: none; border-radius: 8px;">
+                            LinkedIn
+                        </MudButton>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+
+    <!-- Platform Journey -->
+    <MudCard Class="mb-6" Style="border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <MudCardContent Class="pa-6">
+            <MudText Typo="Typo.h5" Class="mb-4" Style="font-weight: 600; color: #1c398e;">
+                Platformanın Hekayəsi
+            </MudText>
+            
+            <MudAlert Severity="Severity.Info" Class="mb-4">
+                <MudText Typo="Typo.body1">
+                    <strong>5 Avqust 2024</strong>
+                </MudText>
+            </MudAlert>
+
+            <MudGrid Spacing="4">
+                <MudItem xs="12" md="8">
+                    <MudText Typo="Typo.body1" Class="mb-3" Style="line-height: 1.7; color: #364153;">
+                        Hər şey sadə bir çətinlikdən başladı – gündəlik söhbətlərdə daim tərcüməçidən istifadə etmək yorucu oldu.
+                        Mən isə qərara gəldim ki, <strong>dili doğrudan öyrənim</strong> və gündəlik həyatımda istifadə edim.
+                    </MudText>
+                    <MudText Typo="Typo.body1" Class="mb-3" Style="line-height: 1.7; color: #364153;">
+                        Öyrənməyə başladıqca başa düşdüm ki, bu resursları yalnız özüm üçün saxlamaq düzgün deyil.
+                        <strong>Həmvətənlərim də eyni çətinliklərlə üzləşir</strong> və bu platforma onlara da dəstək ola bilər.
+                    </MudText>
+                    <MudText Typo="Typo.body1" Style="line-height: 1.7; color: #364153;">
+                        Mənim üçün bu, sadəcə bir layihə deyil – <strong>Türk xalqları arasında dil körpüsü yaratmaq</strong> missiyasıdır.
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <div class="pa-4 text-center" Style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #00b4db 100%); color: white; border-radius: 12px;">
+                        <MudIcon Icon="Icons.Material.Filled.Favorite" Size="Size.Large" Class="mb-3" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Missiya</MudText>
+                        <MudText Typo="Typo.body2">
+                            Dil öyrənməyi əlçatan etmək və Azərbaycan ilə Qazaxıstan arasında anlaşmanı gücləndirmək
+                        </MudText>
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+
+    <!-- Contact -->
+    <MudCard Style="border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <MudCardContent Class="pa-6">
+            <MudText Typo="Typo.h5" Class="mb-4" Style="font-weight: 600; color: #1c398e;">
+                Əlaqə
+            </MudText>
+            <MudGrid Spacing="4" AlignItems="Center">
+                <MudItem xs="12" md="8">
+                    <MudText Typo="Typo.body1" Class="mb-3" Style="line-height: 1.6; color: #364153;">
+                        Platformla bağlı təklifləriniz və suallarınız üçün mənimlə əlaqə saxlaya bilərsiniz. 
+                        Hər növ rəy və tövsiyələri məmnuniyyətlə qarşılayıram.
+                    </MudText>
+                    <MudText Typo="Typo.body2" Style="color: #6a7282;">
+                        Xüsusilə Qazax dili ilə bağlı təcrübənizi paylaşsanız, çox sevinirik!
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12" md="4" Class="text-center">
+                    <MudStack Spacing="2">
+                        <MudButton Variant="Variant.Outlined" 
+                                 StartIcon="@Icons.Custom.Brands.GitHub" 
+                                 Color="Color.Primary" 
+                                 FullWidth="true"
+                                 Href="https://github.com/AhmadovMahammad" 
+                                 Target="_blank"
+                                 Style="text-transform: none; border-radius: 8px;">
+                            GitHub Profili
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined" 
+                                 StartIcon="@Icons.Custom.Brands.LinkedIn" 
+                                 Color="Color.Info" 
+                                 FullWidth="true"
+                                 Href="https://www.linkedin.com/in/mahammad-ahmadov-dev/" 
+                                 Target="_blank"
+                                 Style="text-transform: none; border-radius: 8px;">
+                            LinkedIn Profili
+                        </MudButton>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>

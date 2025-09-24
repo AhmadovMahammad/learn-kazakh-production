@@ -1,0 +1,444 @@
+﻿@page "/vocabulary/{searchCategory?}"
+
+@inject ISnackbar Snackbar
+@inject IHttpClientFactory HttpClientFactory
+@inject IDialogService DialogService
+@inject ILocalStorageService LocalStorage
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-8 mt-2">
+	<MudText Typo="Typo.h3" GutterBottom="true" Class="mb-6" Style="font-weight: 600">
+		Qazax dili lüğəti
+	</MudText>
+
+	<MudTextField Label="Qazax və ya Azərbaycan dilində axtarış edin."
+				  DebounceInterval="500"
+				  ValueChanged="((string value) => OnSearchTextChanged(value))"
+				  Variant="Variant.Outlined"
+				  Adornment="Adornment.Start"
+				  AdornmentIcon="@Icons.Material.Filled.Search"
+				  AdornmentColor="Color.Primary"
+				  Class="mb-4"
+				  Immediate="true"
+				  FullWidth="true" />
+
+	<div class="mb-4">
+		<MudChipSet T="string" SelectionMode="SelectionMode.MultiSelection" CheckMark="false">
+			@foreach (string category in _categories)
+			{
+				<CustomChip Text="@category"
+							IsSelected="@_selectedCategories.Contains(category)"
+							IsSelectable="true"
+							OnClick="@(() => ToggleCategory(category))" />
+			}
+		</MudChipSet>
+	</div>
+
+	<MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+		<MudText Typo="Typo.body2" Style="color: #1c398e;">
+			@_filteredWords.Count söz tapıldı @GetSelectedCategoriesText()
+		</MudText>
+
+		<MudButton Variant="Variant.Outlined"
+				   Color="Color.Primary"
+				   StartIcon="@CustomIcons.Shuffle"
+				   Size="Size.Small"
+				   OnClick="ShuffleWords"
+				   Style="border-radius: 8px;">
+			Qarışdır
+		</MudButton>
+	</MudStack>
+
+	@if (_loadStatus == VocabularyLoadStatus.Loading)
+	{
+		<CustomSkeletonGrid Count="6"
+							Height="200px"
+							Xs="12"
+							Sm="6"
+							Md="4"
+							SkeletonType="SkeletonType.Rectangle"
+							Style="border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+	}
+	else
+	{
+		<MudGrid>
+			@foreach (var word in _filteredWords)
+			{
+				<MudItem @key="word.WordKazakh" xs="12" sm="6" md="4">
+					<MudCard Class="kazakh-card pa-4" Style="height: 200px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+						<MudCardContent Class="pa-0">
+							<MudStack Row AlignItems="AlignItems.Start">
+
+								<MudStack Justify="Justify.SpaceBetween" Style="flex: 1;">
+									<MudStack Spacing="1">
+										<MudText Typo="Typo.h5" Style="font-weight: 600; color: #1c398e;">
+											@word.WordKazakh
+										</MudText>
+										<MudText Typo="Typo.h6" Style="font-weight: 500; color: #364153;">
+											@word.WordAzerbaijani
+										</MudText>
+										<MudText Typo="Typo.body2" Style="color: #6a7282; font-style: italic; font-size: 0.875rem; margin-bottom: 12px;">
+											/@word.Pronounciation/
+										</MudText>
+									</MudStack>
+									<div>
+										<CustomChip Text="@word.Type"
+													Style="@($"background-color: {GetCategoryColor(word.Type)}; color: #000;")" />
+									</div>
+								</MudStack>
+
+								<MudStack AlignItems="AlignItems.Center" Row Style="margin-left: 12px;">
+									<MudTooltip Text="Play Audio">
+										<MudIconButton Icon="@_audioIcon"
+													   Size="Size.Small"
+													   Disabled="@(string.IsNullOrEmpty(word.AudioUrl))"
+													   Color="Color.Dark"
+													   OnClick="@(()=> PlayAudio(word.WordKazakh))"
+													   Variant="Variant.Outlined" />
+									</MudTooltip>
+
+									<MudTooltip Text="Show Examples">
+										<MudIconButton Icon="@_viewIcon"
+													   Size="Size.Small"
+													   Disabled="@(!word.Examples.Any())"
+													   Color="Color.Dark"
+													   OnClick="@(()=> DisplayWordExamples(word.WordKazakh, word.Examples))"
+													   Variant="Variant.Outlined">
+										</MudIconButton>
+									</MudTooltip>
+								</MudStack>
+							</MudStack>
+						</MudCardContent>
+					</MudCard>
+				</MudItem>
+			}
+		</MudGrid>
+	}
+
+	@if (_loadStatus == VocabularyLoadStatus.Loaded && !_filteredWords.Any())
+	{
+		<MudAlert Severity="Severity.Normal" Class="mt-4">
+			@if (_selectedCategories.Contains("All"))
+			{
+				@("Heç bir söz tapılmadı.")
+			}
+			else if (_selectedCategories.Any())
+			{
+				@($"Seçilmiş kateqoriyalar üzrə heç bir söz tapılmadı: {string.Join(", ", _selectedCategories)}")
+			}
+			else
+			{
+				@("Heç bir kateqoriya seçilməyib.")
+			}
+		</MudAlert>
+	}
+
+	@if (_hasMore)
+	{
+		<MudStack Justify="Justify.SpaceBetween" Class="mt-4">
+			@if (_loadStatus == VocabularyLoadStatus.LoadingMore)
+			{
+				<MudProgressCircular Rounded Color="Color.Dark" Indeterminate="true" Size="Size.Medium" />
+			}
+			else
+			{
+				<MudButton Variant="Variant.Filled"
+						   Color="Color.Dark"
+						   Size="Size.Small"
+						   OnClick="LoadMoreWords"
+						   Style="width: 160px;">
+					Daha çox yüklə
+				</MudButton>
+			}
+		</MudStack>
+	}
+</MudContainer>
+
+@code {
+	[Parameter] public string? SearchCategory { get; set; }
+
+	private readonly string _audioIcon = CustomIcons.Audio;
+	private readonly string _viewIcon = CustomIcons.Eye;
+
+	private HttpClient? _httpClient;
+	private readonly List<string> _categories = new();
+	private readonly List<VocabularyDto> _words = new();
+	private List<VocabularyDto> _filteredWords = new();
+
+	private string _searchText = string.Empty;
+	private readonly HashSet<string> _selectedCategories = new();
+	private VocabularyLoadStatus _loadStatus = VocabularyLoadStatus.Loading;
+
+	private int _totalWordsCount;
+	private int _currentOffset;
+	private bool _hasMore;
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (_categories.Count == 0)
+		{
+			// Add "All" as first category, then add other categories
+			_categories.Add("All");
+			_categories.AddRange(Enum.GetValues<VocabularyType>().Where(v => v != VocabularyType.All).Select(v => v.ToString()));
+		}
+
+		// Initialize with "All" selected by default
+		_selectedCategories.Clear();
+		_selectedCategories.Add("All");
+
+		_httpClient ??= HttpClientFactory.CreateClient("LearnKazakhApi");
+		await LoadWords(resetData: true);
+	}
+
+	protected override void OnParametersSet()
+	{
+		if (!string.IsNullOrEmpty(SearchCategory))
+		{
+			if (SearchCategory.Equals("All", StringComparison.OrdinalIgnoreCase))
+			{
+				_selectedCategories.Clear();
+				_selectedCategories.Add("All");
+			}
+			else if (Enum.TryParse<VocabularyType>(SearchCategory, true, out var vocabularyType) && vocabularyType != VocabularyType.All)
+			{
+				_selectedCategories.Clear();
+				_selectedCategories.Add(vocabularyType.ToString());
+			}
+
+			FilterWords();
+		}
+	}
+
+	private async Task LoadWords(bool resetData = false)
+	{
+		try
+		{
+			ArgumentNullException.ThrowIfNull(_httpClient, nameof(_httpClient));
+
+			if (resetData)
+			{
+				var cachedData = await LocalStorage.GetItemAsync<CachedVocabulary>("vocabularyCache");
+				if (cachedData != null && (DateTime.UtcNow - cachedData.CachedAt).TotalHours < 24)
+				{
+					_words.Clear();
+					_words.AddRange(cachedData.Words);
+
+					_currentOffset = cachedData.CurrentOffset;
+					_totalWordsCount = cachedData.TotalCount;
+					_hasMore = cachedData.HasMore;
+
+					FilterWords();
+					_loadStatus = VocabularyLoadStatus.Loaded;
+
+					cachedData.CachedAt = DateTime.UtcNow;
+
+					await LocalStorage.SetItemAsync("vocabularyCache", cachedData);
+
+					return;
+				}
+
+				_currentOffset = 0;
+				_words.Clear();
+			}
+
+			_loadStatus = resetData ? VocabularyLoadStatus.Loading : VocabularyLoadStatus.LoadingMore;
+
+			string endpoint = $"vocabulary?offset={_currentOffset}";
+			var response = await _httpClient.GetFromJsonAsync<ApiPagedResponse<VocabularyDto>>(endpoint);
+
+			if (response?.Success == true && response.Data != null)
+			{
+				_words.AddRange(response.Data.Items);
+				FilterWords();
+
+				_hasMore = response.Data.HasMore;
+				_currentOffset = response.Data.NextOffset;
+				_totalWordsCount = response.Data.TotalCount;
+
+				var cacheObj = new CachedVocabulary
+				{
+					Words = _words,
+					CurrentOffset = _currentOffset,
+					TotalCount = _totalWordsCount,
+					HasMore = _hasMore,
+					CachedAt = DateTime.UtcNow
+				};
+
+				await LocalStorage.SetItemAsync("vocabularyCache", cacheObj);
+			}
+		}
+		catch (Exception)
+		{
+			Snackbar.Add($"Failed to load vocabulary.", Severity.Error);
+			_loadStatus = VocabularyLoadStatus.Error;
+		}
+		finally
+		{
+			if (_loadStatus != VocabularyLoadStatus.Error)
+			{
+				_loadStatus = VocabularyLoadStatus.Loaded;
+			}
+		}
+	}
+
+	private async Task LoadMoreWords()
+	{
+		if (!_hasMore || _loadStatus is VocabularyLoadStatus.Loading or VocabularyLoadStatus.LoadingMore)
+		{
+			return;
+		}
+
+		await LoadWords(resetData: false);
+	}
+
+	private void PlayAudio(string wordKazakh)
+	{
+		Snackbar.Add($"Playing audio for: {wordKazakh}", Severity.Info);
+	}
+
+	private async Task DisplayWordExamples(string kazakhWord, List<VocabularyExampleDto> examples)
+	{
+		var parameters = new DialogParameters
+		{
+			["Examples"] = examples
+		};
+
+		var options = new DialogOptions
+		{
+			CloseButton = false,
+			CloseOnEscapeKey = true,
+			MaxWidth = MaxWidth.Small,
+			FullWidth = true,
+			BackdropClick = true
+		};
+
+		await DialogService.ShowAsync<WordDetailsDialog>($"Examples [ {kazakhWord} ]", parameters, options);
+	}
+
+	private void ToggleCategory(string category)
+	{
+		if (category == "All")
+		{
+			_selectedCategories.Clear();
+			_selectedCategories.Add("All");
+		}
+		else
+		{
+			_selectedCategories.Remove("All");
+			if (_selectedCategories.Contains(category))
+			{
+				_selectedCategories.Remove(category);
+			}
+			else
+			{
+				_selectedCategories.Add(category);
+			}
+
+			if (!_selectedCategories.Any())
+			{
+				_selectedCategories.Add("All");
+			}
+		}
+
+		FilterWords();
+	}
+
+	private void SelectAllCategories()
+	{
+		_selectedCategories.Clear();
+		_selectedCategories.Add("All");
+		FilterWords();
+	}
+
+	private void ClearAllCategories()
+	{
+		_selectedCategories.Clear();
+		_selectedCategories.Add("All");
+		FilterWords();
+	}
+
+	private void OnSearchTextChanged(string value)
+	{
+		_searchText = value;
+		FilterWords();
+	}
+
+	private void FilterWords()
+	{
+		_filteredWords = _words.Where(w =>
+		{
+			bool matchCategory = _selectedCategories.Contains("All") || _selectedCategories.Contains(w.Type);
+
+			bool matchSearch = string.IsNullOrWhiteSpace(_searchText)
+							   || w.WordKazakh.StartsWith(_searchText, StringComparison.OrdinalIgnoreCase)
+							   || w.WordAzerbaijani.StartsWith(_searchText, StringComparison.OrdinalIgnoreCase);
+
+			return matchCategory && matchSearch;
+		}).ToList();
+	}
+
+	private string GetSelectedCategoriesText()
+	{
+		if (_selectedCategories.Contains("All"))
+		{
+			return "";
+		}
+
+		if (_selectedCategories.Count == 1)
+		{
+			return $"({_selectedCategories.First()} üzrə)";
+		}
+
+		return $"({_selectedCategories.Count} kateqoriya üzrə)";
+	}
+
+	private void ShuffleWords()
+	{
+		int n = _words.Count;
+		while (n > 1)
+		{
+			n--;
+
+			int k = Random.Shared.Next(n + 1);
+			(_words[k], _words[n]) = (_words[n], _words[k]);
+		}
+
+		FilterWords();
+	}
+
+	private string GetCategoryColor(string category)
+	{
+		return Enum.Parse<VocabularyType>(category, true) switch
+		{
+			VocabularyType.All => "#f1f5f9",
+			VocabularyType.Alphabet => "#e0f2fe",
+			VocabularyType.Animals => "#ffedd4",
+			VocabularyType.BodyParts => "#fee2e2",
+			VocabularyType.Colors => "#f3e8ff",
+			VocabularyType.DaysOfWeek => "#fef9c2",
+			VocabularyType.FamilyMembers => "#fce7f3",
+			VocabularyType.FoodAndDrinks => "#dcfce7",
+			VocabularyType.Greetings => "#dbeafe",
+			VocabularyType.Numbers => "#ede9fe",
+			VocabularyType.Places => "#ffe4e6",
+			VocabularyType.Seasons => "#faf5ff",
+			VocabularyType.Time => "#e0f7fa",
+			VocabularyType.Transportation => "#fff1f2",
+			VocabularyType.Weather => "#e0f2f1",
+			VocabularyType.Phrases => "#fef3c7",
+			VocabularyType.Idioms => "#e9d5ff",
+			VocabularyType.Expressions => "#c7d2fe",
+			VocabularyType.Slang => "#fbcfe8",
+			VocabularyType.Proverbs => "#fde68a",
+			_ => "#f1f5f9"
+		};
+	}
+
+	private class CachedVocabulary
+	{
+		public List<VocabularyDto> Words { get; set; } = new();
+		public int CurrentOffset { get; set; }
+		public int TotalCount { get; set; }
+		public bool HasMore { get; set; }
+		public DateTime CachedAt { get; set; }
+	}
+}

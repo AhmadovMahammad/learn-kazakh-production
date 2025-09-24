@@ -1,0 +1,21 @@
+﻿<MudItem xs="12" sm="6" md="4">
+    <MudCard Class="kazakh-card pa-4" Style="height: 200px; border: 1px solid #e0e0e0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <MudStack AlignItems="AlignItems.Start">
+            <MudIcon Icon="@Icon" Size="Size.Large" Color="Color.Primary" />
+            <MudStack Spacing="0">
+                <MudText Color="Color.Dark" Typo="Typo.body2" Style="font-weight: 600;">
+                    @Title
+                </MudText>
+                <MudText Class="mt-2" Typo="Typo.caption" Style="font-weight: 400; color: #737373;">
+                    @Content
+                </MudText>
+            </MudStack>
+        </MudStack>
+    </MudCard>
+</MudItem>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Default Title";
+    [Parameter] public string Content { get; set; } = "Default content goes here.";
+    [Parameter] public string Icon { get; set; } = string.Empty;
+}

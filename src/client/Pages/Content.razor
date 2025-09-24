@@ -1,0 +1,191 @@
+﻿@page "/content/{SectionId:guid}"
+
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IJSRuntime JS
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-8 mt-2">
+	<ContentSkeleton Visible="_isLoading" />
+	@if (!_isLoading)
+	{
+		if (_sectionContentDto == null || _sectionContentDto.Contents.Count == 0)
+		{
+			<MudAlert Severity="Severity.Normal" Class="mt-4">
+				Məzmun tapılmadı.
+			</MudAlert>
+		}
+		else
+		{
+			if (_currentContent != null)
+			{
+				<MudText Typo="Typo.h3" Class="mb-2" Style="font-weight:600">
+					@_sectionContentDto.Title
+				</MudText>
+
+				<MudText Typo="Typo.subtitle2" Class="mb-4" Style="font-weight:300">
+					Learning Kazakh • @_sectionContentDto.Category bölməsi
+				</MudText>
+
+				<MudPaper Elevation="2" Class="pa-4 mb-6" Style="border-radius:8px">
+					<MudText Typo="Typo.h6" Class="mb-2">Məzmun formatı</MudText>
+					<ContentFormatSelector Formats="_contentFormats"
+										   SelectedFormat="@_selectedFormat"
+										   OnFormatSelected="(f)=> _selectedFormat = f"
+										   IsDisabled="IsDisabled" />
+				</MudPaper>
+
+				<MudPaper Elevation="2" Class="pa-4" Style="border-radius:8px; white-space: pre-wrap;">
+					<ContentRenderer Format="@_selectedFormat" Content="_currentContent" />
+				</MudPaper>
+			}
+
+			<MudGrid Class="mt-6">
+				<MudItem xs="4" Class="d-flex justify-content-start align-self-start">
+					@if (_sectionContentDto?.HasPreviousSection == true)
+					{
+						<MudButton Variant="Variant.Filled"
+								   OnClick="@(()=> ChangeSection("previous"))"
+								   Color="Color.Surface"
+								   Size="Size.Small"
+								   StartIcon="@Icons.Material.Filled.ArrowBack">
+							@_sectionContentDto.PreviousSectionText
+						</MudButton>
+					}
+				</MudItem>
+
+				<MudItem xs="4" Class="d-flex justify-content-center">
+					<MudPagination Count="@_sectionContentDto.Contents.Count"
+								   Selected="@_currentPage"
+								   SelectedChanged="@OnPageChanged"
+								   ShowFirstButton="true"
+								   Size="Size.Small"
+								   ShowLastButton="true"
+								   Rectangular="true"
+								   Variant="Variant.Filled" />
+				</MudItem>
+
+				<MudItem xs="4" Class="d-flex justify-content-end align-self-start">
+					@if (_sectionContentDto?.HasNextSection == true)
+					{
+						<MudButton Variant="Variant.Filled"
+								   OnClick="@(()=> ChangeSection("next"))"
+								   Color="Color.Dark"
+								   Size="Size.Small"
+								   EndIcon="@Icons.Material.Filled.ArrowForward">
+							@_sectionContentDto.NextSectionText
+						</MudButton>
+					}
+				</MudItem>
+			</MudGrid>
+		}
+	}
+</MudContainer>
+
+@code {
+	[Parameter] public Guid SectionId { get; set; }
+
+	private bool _isLoading = true;
+	private int _currentPage = 1;
+	private string _selectedFormat = "Text";
+
+	private SectionContentDto? _sectionContentDto;
+	private ContentDto? _currentContent;
+
+	private readonly Dictionary<string, string> _contentFormats = new()
+	{
+		{ "Text", CustomIcons.Text },
+		{ "Markdown", CustomIcons.Markdown },
+		{ "HTML", CustomIcons.Html }
+	};
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (SectionId == Guid.Empty)
+		{
+			_sectionContentDto = null;
+			return;
+		}
+
+		try
+		{
+			var httpClient = HttpClientFactory.CreateClient("LearnKazakhApi");
+			var response = await httpClient.GetFromJsonAsync<ApiResponse<SectionContentDto>>($"content/section/{SectionId}");
+
+			if (response == null)
+			{
+				Snackbar.Add("Failed to load content.", Severity.Error);
+				return;
+			}
+
+			_sectionContentDto = response.Data;
+			if (_sectionContentDto?.Contents.Any() == true)
+			{
+				OnPageChanged(1);
+			}
+		}
+		catch (Exception)
+		{
+			Snackbar.Add("Failed to load content.", Severity.Error);
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private void OnPageChanged(int page)
+	{
+		_currentPage = page;
+
+		if (_sectionContentDto?.Contents.Count >= page)
+		{
+			_currentContent = _sectionContentDto.Contents[page - 1];
+			_selectedFormat = "Text"; // Always reset to Text when page changes
+			ScrollToTop();
+		}
+	}
+
+	private void ChangeSection(string position)
+	{
+		if (_sectionContentDto == null) return;
+
+		Guid? sectionId = position switch
+		{
+			"previous" => _sectionContentDto.PreviousSectionId,
+			"next" => _sectionContentDto.NextSectionId,
+			_ => null
+		};
+
+		if (sectionId != null && sectionId != Guid.Empty)
+		{
+			NavigationManager.NavigateTo($"/content/{sectionId}");
+		}
+	}
+
+	private bool IsDisabled(string format)
+	{
+		if (_currentContent == null) return true;
+
+		return format switch
+		{
+			"Text" => string.IsNullOrWhiteSpace(_currentContent.ContentText),
+			"Markdown" => string.IsNullOrWhiteSpace(_currentContent.ContentMarkdown),
+			"HTML" => string.IsNullOrWhiteSpace(_currentContent.ContentHtml),
+			_ => true
+		};
+	}
+
+	private string GetFormatDescription(string key) => key switch
+	{
+		"Text" => "Sadə mətn formatı",
+		"Markdown" => "Markdown formatlı mətn",
+		"HTML" => "HTML məzmun formatı",
+		_ => key
+	};
+
+	private void ScrollToTop()
+	{
+		JS.InvokeVoidAsync("window.scrollTo", 0, 0);
+	}
+}

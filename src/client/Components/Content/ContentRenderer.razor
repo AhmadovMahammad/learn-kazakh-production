@@ -1,0 +1,23 @@
+﻿@switch (Format)
+{
+    case "Text":
+        <MudText Typo="Typo.body1">@Content?.ContentText</MudText>
+        break;
+
+    case "Markdown":
+        <MudMarkdown Value="@Content?.ContentMarkdown" />
+        break;
+
+    case "HTML":
+        <div>@((MarkupString)(Content?.ContentHtml ?? string.Empty))</div>
+        break;
+
+    default:
+        <MudText Typo="Typo.body1">Unsupported format selected.</MudText>
+        break;
+}
+
+@code {
+    [Parameter] public string Format { get; set; } = "Text";
+    [Parameter] public ContentDto? Content { get; set; }
+}

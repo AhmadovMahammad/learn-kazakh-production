@@ -1,0 +1,25 @@
+﻿<MudGrid>
+    @for (int i = 0; i < Count; i++)
+    {
+        <MudItem xs="@Xs" sm="@Sm" md="@Md" lg="@Lg" xl="@Xl">
+            <MudSkeleton SkeletonType="@SkeletonType"
+                         Class="@Class"
+                         Style="@($"height: {Height}; {Style}")" />
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter] public int Count { get; set; } = 6;
+    [Parameter] public string Height { get; set; } = "200px";
+    [Parameter] public SkeletonType SkeletonType { get; set; } = SkeletonType.Rectangle;
+
+    [Parameter] public int Xs { get; set; } = 12;
+    [Parameter] public int Sm { get; set; } = 6;
+    [Parameter] public int Md { get; set; } = 4;
+    [Parameter] public int Lg { get; set; } = 0;
+    [Parameter] public int Xl { get; set; } = 0;
+    
+}

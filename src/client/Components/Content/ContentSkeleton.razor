@@ -1,0 +1,18 @@
+﻿@if (Visible)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Text" Width="40%" Height="40px" Class="mb-2" Animation="Animation.Wave" />
+    <MudSkeleton SkeletonType="SkeletonType.Text" Width="60%" Height="20px" Class="mb-4" Animation="Animation.Wave" />
+
+    <MudPaper Elevation="2" Class="pa-4 mb-6" Style="border-radius: 8px">
+        <MudSkeleton SkeletonType="SkeletonType.Text" Width="30%" Height="24px" Class="mb-3" Animation="Animation.Wave" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="40px" Animation="Animation.Wave" />
+    </MudPaper>
+
+    <MudPaper Elevation="2" Class="pa-4" Style="border-radius: 8px">
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="300px" Animation="Animation.Wave" />
+    </MudPaper>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+}

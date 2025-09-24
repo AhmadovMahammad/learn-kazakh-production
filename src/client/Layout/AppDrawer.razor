@@ -1,0 +1,43 @@
+﻿<MudDrawer Open="@DrawerOpen"
+           Width="300px"
+           Elevation="2"
+           Variant="DrawerVariant.Responsive"
+           ClipMode="DrawerClipMode.Always">
+    <div style="flex: 1; overflow-y: auto;">
+        <NavMenu />
+    </div>
+
+    @if (DrawerOpen)
+    {
+        <div style="flex-shrink: 0; padding: 16px;">
+            <MudPaper Elevation="1" Class="pa-2"
+                      Style="background-color: #fafafa;">
+                <div class="d-flex align-center" style="gap: 12px;">
+                    <MudAvatar Color="Color.Primary"
+                               Rounded
+                               Variant="Variant.Filled"
+                               Size="Size.Small"
+                               Style="width: 32px; height: 32px; font-size: 0.875rem; font-weight: 500;">
+                        G
+                    </MudAvatar>
+
+                    <MudStack Spacing="0" Style="min-width: 0;">
+                        <MudText Typo="Typo.body2"
+                                 Class="mud-text-primary"
+                                 Style="font-weight: 500; font-size: 0.875rem;">
+                            Qonaq istifadəçi
+                        </MudText>
+                        <MudText Typo="Typo.caption"
+                                 Style="color: rgba(0, 0, 0, 0.6);">
+                            Yalnız oxuma rejimi
+                        </MudText>
+                    </MudStack>
+                </div>
+            </MudPaper>
+        </div>
+    }
+</MudDrawer>
+
+@code {
+    [Parameter] public bool DrawerOpen { get; set; } = true;
+}

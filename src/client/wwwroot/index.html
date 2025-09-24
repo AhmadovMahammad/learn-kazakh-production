@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learn Kazakh</title>
+    <base href="/" />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link href="_content/MudBlazor.Markdown/MudBlazor.Markdown.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link href="ClientSolution.styles.css" rel="stylesheet" />
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="icon" type="image/png" href="icons/learn_kazakh_light.png" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="loading-container">
+            <div class="background-pattern">
+                <div class="pattern-circle pattern-1"></div>
+                <div class="pattern-circle pattern-2"></div>
+                <div class="pattern-circle pattern-3"></div>
+            </div>
+
+            <div class="loading-content">
+                <div class="logo-container">
+                    <div class="kazakh-symbol">
+                        <div class="symbol-ring outer-ring"></div>
+                        <div class="symbol-ring middle-ring"></div>
+                        <div class="symbol-ring inner-ring"></div>
+                        <div class="center-dot"></div>
+                    </div>
+                </div>
+
+                <div class="text-container">
+                    <h2 class="main-title">Learning Kazakh Language</h2>
+                    <p class="subtitle">Қазақ тілін үйрену платформасы</p>
+                    <p class="loading-text">Жүктелуде...</p>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            .loading-container {
+                position: relative;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #00b4db 100%);
+                will-change: transform;
+            }
+
+            .background-pattern {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                z-index: 1;
+                pointer-events: none;
+            }
+
+            .pattern-circle {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.04);
+                will-change: transform, opacity;
+                animation: float 8s ease-in-out infinite;
+            }
+
+            .pattern-1 {
+                width: 180px;
+                height: 180px;
+                top: 15%;
+                left: 15%;
+                animation-delay: 0s;
+            }
+
+            .pattern-2 {
+                width: 120px;
+                height: 120px;
+                top: 65%;
+                right: 20%;
+                animation-delay: 2.5s;
+            }
+
+            .pattern-3 {
+                width: 80px;
+                height: 80px;
+                bottom: 25%;
+                left: 25%;
+                animation-delay: 5s;
+            }
+
+            @keyframes float {
+                0%, 100% {
+                    transform: translateY(0) scale(1);
+                    opacity: 0.4;
+                }
+
+                50% {
+                    transform: translateY(-20px) scale(1.1);
+                    opacity: 0.2;
+                }
+            }
+
+            .loading-content {
+                position: relative;
+                z-index: 2;
+                text-align: center;
+                color: white;
+            }
+
+            .logo-container {
+                margin-bottom: 50px;
+            }
+
+            .kazakh-symbol {
+                position: relative;
+                width: 140px;
+                height: 140px;
+                margin: 0 auto;
+            }
+
+            .symbol-ring {
+                position: absolute;
+                border-radius: 50%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                will-change: transform;
+            }
+
+            .outer-ring {
+                width: 140px;
+                height: 140px;
+                border: 3px solid rgba(255, 255, 255, 0.25);
+                animation: rotate 12s linear infinite;
+            }
+
+            .middle-ring {
+                width: 100px;
+                height: 100px;
+                border: 2px solid rgba(255, 215, 0, 0.6);
+                animation: rotate 8s linear infinite reverse;
+            }
+
+            .inner-ring {
+                width: 70px;
+                height: 70px;
+                border: 2px solid rgba(255, 255, 255, 0.7);
+                animation: rotate 5s linear infinite;
+            }
+
+            .center-dot {
+                position: absolute;
+                width: 24px;
+                height: 24px;
+                background: linear-gradient(45deg, #ffd700, #ffed4a);
+                border-radius: 50%;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                animation: pulse 3s ease-in-out infinite;
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            }
+
+            @keyframes rotate {
+                0% {
+                    transform: translate(-50%, -50%) rotate(0deg);
+                }
+
+                100% {
+                    transform: translate(-50%, -50%) rotate(360deg);
+                }
+            }
+
+            @keyframes pulse {
+                0%, 100% {
+                    transform: translate(-50%, -50%) scale(1);
+                    opacity: 1;
+                }
+
+                50% {
+                    transform: translate(-50%, -50%) scale(1.15);
+                    opacity: 0.9;
+                }
+            }
+
+            .text-container {
+                margin-bottom: 0;
+            }
+
+            .main-title {
+                font-size: 2.8rem;
+                font-weight: 300;
+                margin-bottom: 15px;
+                text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+                animation: fadeInUp 1.2s ease-out;
+                letter-spacing: 0.5px;
+            }
+
+            .subtitle {
+                font-size: 1.3rem;
+                color: rgba(255, 255, 255, 0.85);
+                font-weight: 300;
+                margin-bottom: 30px;
+                animation: fadeInUp 1.2s ease-out 0.4s both;
+                letter-spacing: 0.3px;
+            }
+
+            .loading-text {
+                font-size: 1.1rem;
+                color: rgba(255, 255, 255, 0.8);
+                font-weight: 300;
+                animation: fadeInUp 1.2s ease-out 0.8s both, textPulse 2.5s ease-in-out infinite 1.5s;
+                letter-spacing: 0.5px;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(25px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes textPulse {
+                0%, 100% {
+                    opacity: 0.8;
+                    transform: translateY(0);
+                }
+
+                50% {
+                    opacity: 1;
+                    transform: translateY(-2px);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .main-title {
+                    font-size: 2.2rem;
+                }
+
+                .subtitle {
+                    font-size: 1.1rem;
+                }
+
+                .loading-text {
+                    font-size: 1rem;
+                }
+
+                .kazakh-symbol {
+                    width: 120px;
+                    height: 120px;
+                }
+
+                .outer-ring {
+                    width: 120px;
+                    height: 120px;
+                }
+
+                .middle-ring {
+                    width: 85px;
+                    height: 85px;
+                }
+
+                .inner-ring {
+                    width: 60px;
+                    height: 60px;
+                }
+
+                .center-dot {
+                    width: 20px;
+                    height: 20px;
+                }
+
+                .pattern-1 {
+                    width: 140px;
+                    height: 140px;
+                }
+
+                .pattern-2 {
+                    width: 100px;
+                    height: 100px;
+                }
+
+                .pattern-3 {
+                    width: 60px;
+                    height: 60px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .main-title {
+                    font-size: 1.8rem;
+                }
+
+                .subtitle {
+                    font-size: 0.95rem;
+                }
+
+                .logo-container {
+                    margin-bottom: 40px;
+                }
+            }
+
+            .symbol-ring,
+            .center-dot,
+            .pattern-circle {
+                backface-visibility: hidden;
+                perspective: 1000px;
+            }
+        </style>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="_content/MudBlazor.Markdown/MudBlazor.Markdown.min.js"></script>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+</body>
+
+</html>

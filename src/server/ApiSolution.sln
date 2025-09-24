@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnKazakh.API", "LearnKazakh.API\LearnKazakh.API.csproj", "{25EDC7FB-8A02-458F-8E5F-AECE2B0D581D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnKazakh.Application", "LearnKazakh.Application\LearnKazakh.Application.csproj", "{78F43D92-BD25-4C91-B81E-1D4FD9A4B4C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnKazakh.Core", "LearnKazakh.Core\LearnKazakh.Core.csproj", "{F95A1188-7C95-45DB-B395-C2646395B157}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnKazakh.Domain", "LearnKazakh.Domain\LearnKazakh.Domain.csproj", "{13E6F600-13AA-4A0A-8A93-E0F296E5C3B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnKazakh.Persistence", "LearnKazakh.Persistence\LearnKazakh.Persistence.csproj", "{66A81A54-8948-4620-8FEF-28A9FABC215B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnKazakh.Infrastructure", "LearnKazakh.Infrastructure\LearnKazakh.Infrastructure.csproj", "{BE6AFDC7-F9D7-478A-B86A-DE59EFBBCC67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnKazakh.Shared", "..\shared\LearnKazakh.Shared\LearnKazakh.Shared.csproj", "{E2D5BDDE-15F6-4E65-9C73-81AC0380483A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{25EDC7FB-8A02-458F-8E5F-AECE2B0D581D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25EDC7FB-8A02-458F-8E5F-AECE2B0D581D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25EDC7FB-8A02-458F-8E5F-AECE2B0D581D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25EDC7FB-8A02-458F-8E5F-AECE2B0D581D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F43D92-BD25-4C91-B81E-1D4FD9A4B4C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F43D92-BD25-4C91-B81E-1D4FD9A4B4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F43D92-BD25-4C91-B81E-1D4FD9A4B4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F43D92-BD25-4C91-B81E-1D4FD9A4B4C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F95A1188-7C95-45DB-B395-C2646395B157}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95A1188-7C95-45DB-B395-C2646395B157}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95A1188-7C95-45DB-B395-C2646395B157}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95A1188-7C95-45DB-B395-C2646395B157}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13E6F600-13AA-4A0A-8A93-E0F296E5C3B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13E6F600-13AA-4A0A-8A93-E0F296E5C3B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13E6F600-13AA-4A0A-8A93-E0F296E5C3B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13E6F600-13AA-4A0A-8A93-E0F296E5C3B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66A81A54-8948-4620-8FEF-28A9FABC215B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66A81A54-8948-4620-8FEF-28A9FABC215B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66A81A54-8948-4620-8FEF-28A9FABC215B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66A81A54-8948-4620-8FEF-28A9FABC215B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE6AFDC7-F9D7-478A-B86A-DE59EFBBCC67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE6AFDC7-F9D7-478A-B86A-DE59EFBBCC67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE6AFDC7-F9D7-478A-B86A-DE59EFBBCC67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE6AFDC7-F9D7-478A-B86A-DE59EFBBCC67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2D5BDDE-15F6-4E65-9C73-81AC0380483A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2D5BDDE-15F6-4E65-9C73-81AC0380483A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2D5BDDE-15F6-4E65-9C73-81AC0380483A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2D5BDDE-15F6-4E65-9C73-81AC0380483A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

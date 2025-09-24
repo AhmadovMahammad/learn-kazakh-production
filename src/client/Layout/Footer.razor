@@ -1,0 +1,64 @@
+﻿@inject ScrollService ScrollService
+
+<MudPaper Class="footer-root" Square>
+	<MudContainer MaxWidth="MaxWidth.False">
+		<MudGrid>
+
+			<!-- Left Section -->
+			<MudItem xs="12" sm="3">
+				<MudStack Spacing="1">
+					<div style="display:flex; align-items:center;">
+						<MudIcon Size="Size.Large" Style="color:white;" Icon="@Icons.Material.Filled.Public" Class="mr-2" />
+						<MudText Typo="Typo.h6" Style="font-weight:700; color:white;">Learn Kazakh</MudText>
+					</div>
+					<MudText Typo="Typo.subtitle1" Style="color: #9CA3AF;">
+						Qazax dilini öyrənmək üçün şəxsi təcrübəmdən B1 səviyyəsinədək pulsuz resurslar.
+					</MudText>
+				</MudStack>
+			</MudItem>
+
+			<!-- Learning -->
+			<MudItem xs="12" sm="3">
+				<MudText Typo="Typo.subtitle1" Style="font-weight:700; color:white;">Məzmun</MudText>
+				<MudLink Class="footer-root-link" Href="/">Əlifba</MudLink><br />
+				<MudLink Class="footer-root-link" Href="/vocabulary/all">Lüğət</MudLink><br />
+				<MudLink Class="footer-root-link" Href="/">Qrammatika</MudLink><br />
+			</MudItem>
+
+			<!-- Resources -->
+			<MudItem xs="12" sm="3">
+				<MudText Typo="Typo.subtitle1" Style="font-weight:700; color:white;">Resurslar</MudText>
+				<MudLink OnClick="@(() => ScrollService.ScrollToJourney())" Class="footer-root-link">3 aylıq yol xəritəsi</MudLink><br />
+				<MudLink Class="footer-root-link">Təcrübə tapşırıqları</MudLink><br />
+				<MudLink Class="footer-root-link">Öyrənmə məsləhətləri</MudLink>
+			</MudItem>
+
+			<!-- About -->
+			<MudItem xs="12" sm="3">
+				<MudText Typo="Typo.subtitle1" Style="font-weight:700; color:white;">Haqqında</MudText>
+				<MudLink Href="/about" Class="footer-root-link">Mənim yolum</MudLink><br />
+				<MudLink Class="footer-root-link">Niyə pulsuzdur?</MudLink><br />
+				<MudLink Href="/about" Class="footer-root-link">Əlaqə</MudLink>
+			</MudItem>
+		</MudGrid>
+
+		<MudDivider Class="my-4" Style="background-color:#1F2937;" />
+
+		<!-- Bottom Copyright -->
+		<MudText Typo="Typo.body2" Align="Align.Center" Style="color: #9CA3AF;">
+			© @(DateTime.Now.Year) Learn Kazakh. Hamı üçün sərbəst paylaşılıb.
+		</MudText>
+	</MudContainer>
+</MudPaper>
+
+<style>
+	.footer-root {
+		background-color: #101828;
+		padding: 2rem 0;
+	}
+
+	.footer-root-link {
+		color: #9CA3AF !important;
+		text-decoration: none;
+	}
+</style>

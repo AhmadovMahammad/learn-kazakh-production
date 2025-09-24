@@ -1,0 +1,86 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JS
+
+<MudThemeProvider Theme="@_theme" IsDarkMode="false" />
+<MudPopoverProvider />
+<MudDialogProvider FullWidth="false"
+				   MaxWidth="MaxWidth.ExtraSmall"
+				   CloseButton="true"
+				   BackdropClick="false"
+				   NoHeader="false"
+				   Position="DialogPosition.Center"
+				   CloseOnEscapeKey="true"
+				   BackgroundClass="my-custom-class" />
+<MudSnackbarProvider />
+
+<MudLayout>
+	@*test*@
+	<AppBar DrawerOpen="@_drawerOpen"
+			DrawerStateChanged="OnDrawerStateChanged" />
+
+	<AppDrawer DrawerOpen="@_drawerOpen" />
+
+	<MudMainContent>
+		<div style="flex: 1;">
+			@Body
+		</div>
+		<Footer />
+	</MudMainContent>
+</MudLayout>
+
+@code {
+	private bool _drawerOpen = true;
+	private MudTheme? _theme;
+
+	protected override void OnInitialized()
+	{
+		_theme = new MudTheme
+		{
+			Typography = new Typography
+			{
+				Body1 = new Body1Typography
+				{
+					FontFamily = new[] { "Roboto", "Arial", "sans-serif" }
+				}
+			},
+			PaletteLight = new PaletteLight
+			{
+				Primary = "#2563eb",
+				Background = "#e5ecff",
+			},
+		};
+	}
+
+	private void OnDrawerStateChanged(bool drawerOpen)
+	{
+		_drawerOpen = drawerOpen;
+	}
+}
+
+<style>
+	.mud-main-content {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.kazakh-card {
+		transition: all 0.3s ease;
+	}
+
+		.kazakh-card:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+		}
+</style>
+
+<script>
+	function ScrollTo(elementId) {
+		var element = document.getElementById(elementId);
+		if (element) {
+			element.scrollIntoView({
+				behavior: 'smooth'
+			});
+		}
+	}
+</script>

@@ -1,0 +1,36 @@
+﻿<MudChip T="string"
+         Text="@Text"
+         Variant="Variant.Filled"
+         Size="Size.Small"
+         Color="Color.Dark"
+         OnClick="OnClick"
+         Disabled="@IsDisabled"
+         Icon="@Icon"
+         Style="@GetChipStyle()" />
+
+@code {
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public bool IsSelectable { get; set; } = false;
+    [Parameter] public bool IsSelected { get; set; } = false;
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public string? Style { get; set; } = null;
+    [Parameter] public string? Icon { get; set; } = null;
+    [Parameter] public bool IsDisabled { get; set; } = false;
+
+    private string GetChipStyle()
+    {
+        var baseStyle = "border-radius: 5px; font-size: 0.8rem; padding: 4px 12px;";
+
+        if (IsSelectable)
+        {
+            if (IsSelected)
+            {
+                return $"{baseStyle} background-color: #000000 !important; color: white !important;";
+            }
+
+            return $"{baseStyle} background-color: #ffffff; color: #666; border: 1px solid #e0e0e0;";
+        }
+
+        return $"{Style} {baseStyle}";
+    }
+}

@@ -1,0 +1,28 @@
+﻿<MudChipSet T="string" SelectionMode="SelectionMode.SingleSelection" CheckMark="false">
+    @foreach (KeyValuePair<string, string> kvp in Formats)
+    {
+        <MudTooltip Text="@GetFormatDescription(kvp.Key)" Placement="Placement.Bottom">
+            <CustomChip Text="@kvp.Key"
+                        IsSelected="(SelectedFormat == kvp.Key)"
+                        IsSelectable="true"
+                        Icon="@kvp.Value"
+                        IsDisabled="@(IsDisabled(kvp.Key))"
+                        OnClick="() => OnFormatSelected.InvokeAsync(kvp.Key)" />
+        </MudTooltip>
+    }
+</MudChipSet>
+
+@code {
+    [Parameter] public Dictionary<string, string> Formats { get; set; } = new();
+    [Parameter] public string SelectedFormat { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> OnFormatSelected { get; set; }
+    [Parameter] public Func<string, bool> IsDisabled { get; set; } = _ => false;
+
+    private string GetFormatDescription(string key) => key switch
+    {
+        "Text" => "Plain text format",
+        "Markdown" => "Markdown formatted text",
+        "HTML" => "HTML content format",
+        _ => key
+    };
+}

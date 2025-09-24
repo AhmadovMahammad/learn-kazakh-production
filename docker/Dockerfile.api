@@ -1,0 +1,37 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy solution file
+COPY ./src/server/ApiSolution.sln ./server/
+
+# Copy csproj files
+COPY ./src/shared/LearnKazakh.Shared/*.csproj         ./shared/LearnKazakh.Shared/
+COPY ./src/server/LearnKazakh.API/*.csproj            ./server/LearnKazakh.API/
+COPY ./src/server/LearnKazakh.Application/*.csproj    ./server/LearnKazakh.Application/
+COPY ./src/server/LearnKazakh.Core/*.csproj           ./server/LearnKazakh.Core/
+COPY ./src/server/LearnKazakh.Domain/*.csproj         ./server/LearnKazakh.Domain/
+COPY ./src/server/LearnKazakh.Infrastructure/*.csproj ./server/LearnKazakh.Infrastructure/
+COPY ./src/server/LearnKazakh.Persistence/*.csproj    ./server/LearnKazakh.Persistence/
+
+# Restore dependencies for ALL projects
+RUN dotnet restore ./server/ApiSolution.sln
+
+# Copy the rest of the source code
+COPY ./src/server ./server/
+COPY ./src/shared ./shared/
+
+# Publish stage: Publish API project
+RUN dotnet publish ./server/ApiSolution.sln -c Release -o /out --no-restore
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+
+# Copy published app
+COPY --from=build /out ./
+
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "LearnKazakh.API.dll"]

@@ -1,0 +1,29 @@
+﻿<MudDialog Style="height: 300px">
+    <DialogContent>
+        <MudList T="List<VocabularyExampleDto>" Dense="true">
+            @foreach (var ex in Examples)
+            {
+                <MudListItem Style="margin-bottom:10px; background-color: #f9fafb;">
+                    <MudText Style="font-weight: 600; color: #193cb8;">
+                        @ex.SentenceTranslation
+                    </MudText>
+
+                    <MudText Style="font-weight: 500; color: #4a5565;">
+                        @ex.SentenceKazakh
+                    </MudText>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public List<VocabularyExampleDto> Examples { get; set; } = [];
+
+    private void Close() => MudDialog.Cancel();
+}
