@@ -1,0 +1,59 @@
+services:
+    postgres:
+        image: postgres:16
+        container_name: learn-kazakh-postgres
+        restart: unless-stopped
+        env_file:
+            - ./docker/app.env.postgres
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U SUPERADMIN -d LearnKazakh"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 30s
+        networks:
+            - appnet
+
+    api:
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile.api
+        container_name: learn-kazakh-api
+        restart: unless-stopped
+        env_file:
+            - ./docker/app.env.postgres
+            - ./docker/app.env.server
+        ports:
+            - "8080:8080"
+        volumes:
+            - app-logs:/api/logs
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - appnet
+
+    client:
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile.client
+        container_name: learn-kazakh-client
+        restart: unless-stopped
+        ports:
+            - "8081:80"
+        depends_on:
+            - api
+        networks:
+            - appnet
+
+volumes:
+    pgdata:
+    app-logs:
+
+networks:
+    appnet:
+        driver: bridge
