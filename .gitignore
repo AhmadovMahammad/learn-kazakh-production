@@ -9,7 +9,11 @@
 *.user
 *.userosscache
 *.sln.docstates
+
+# Environment files
 *.env
+*.env.*
+!*.env.*.sample
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -426,8 +430,3 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-
-
-# Environment files
-docker/*.env*
-*.env
