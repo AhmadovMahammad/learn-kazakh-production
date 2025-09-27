@@ -3,122 +3,133 @@
 @inject NavigationManager NavigationManager
 
 <MudPaper Elevation="0" Class="py-3">
-    <MudNavMenu Color="Color.Primary" Bordered="true" Dense>
+	<MudNavMenu Color="Color.Primary" Bordered="true" Dense>
 
-        <MudTooltip Text="Mənim şəxsi öyrənmə yolum." Placement="Placement.Right">
-            <MudNavLink Match="NavLinkMatch.All" Href="/">
-                <MudIcon Icon="@(_homeIcon)" Size="Size.Small" />
-                <div class="nav-content">
-                    <span class="nav-text">Ana səhifə</span>
-                </div>
-            </MudNavLink>
-        </MudTooltip>
+		<MudTooltip Text="Mənim şəxsi öyrənmə yolum." Placement="Placement.Right">
+			<MudNavLink Match="NavLinkMatch.All" Href="/">
+				<MudIcon Icon="@(_homeIcon)" Size="Size.Small" />
+				<div class="nav-content">
+					<span class="nav-text">Ana səhifə</span>
+				</div>
+			</MudNavLink>
+		</MudTooltip>
 
-        @foreach (KeyValuePair<CategoryDto, bool> kvp in _expandedGroups)
-        {
-            @if (kvp.Key.Sections.Count == 1)
-            {
-                <MudTooltip Text="@kvp.Key.Description" Placement="Placement.Right">
-                    <MudNavLink Href="content">
-                        <MudIcon Icon="@kvp.Key.Icon" Size="Size.Small" />
-                        <div class="nav-content">
-                            <span class="nav-text">@kvp.Key.Name</span>
-                        </div>
-                    </MudNavLink>
-                </MudTooltip>
-            }
-            else
-            {
-                <MudNavGroup Expanded="@kvp.Value">
-                    <TitleContent>
-                        <MudTooltip Text="@kvp.Key.Description" Placement="Placement.Right">
-                            <MudIcon Icon="@kvp.Key.Icon" Size="Size.Small" />
-                            <span style="margin-left: 5px;">@kvp.Key.Name</span>
-                        </MudTooltip>
-                    </TitleContent>
+		@foreach (KeyValuePair<CategoryDto, bool> kvp in _expandedGroups)
+		{
+			@if (kvp.Key.Sections.Count == 1)
+			{
+				<MudTooltip Text="@kvp.Key.Description" Placement="Placement.Right">
+					<MudNavLink Href="content">
+						<MudIcon Icon="@kvp.Key.Icon" Size="Size.Small" />
+						<div class="nav-content">
+							<span class="nav-text">@kvp.Key.Name</span>
+						</div>
+					</MudNavLink>
+				</MudTooltip>
+			}
+			else
+			{
+				<MudNavGroup Expanded="@kvp.Value">
+					<TitleContent>
+						<MudTooltip Text="@kvp.Key.Description" Placement="Placement.Right">
+							<MudIcon Icon="@kvp.Key.Icon" Size="Size.Small" />
+							<span style="margin-left: 5px;">@kvp.Key.Name</span>
+						</MudTooltip>
+					</TitleContent>
 
-                    <ChildContent>
-                        @foreach (SectionDto sect in kvp.Key.Sections)
-                        {
-                            <MudNavLink Href="@($"/content/{sect.Id}")">
-                                <div class="nav-content">
-                                    <span class="nav-text">@sect.Title</span>
-                                </div>
-                            </MudNavLink>
-                        }
-                    </ChildContent>
-                </MudNavGroup>
-            }
-        }
+					<ChildContent>
+						@foreach (SectionDto sect in kvp.Key.Sections)
+						{
+							<MudNavLink Href="@($"/content/{sect.Id}")">
+								<div class="nav-content">
+									<span class="nav-text">@sect.Title</span>
+								</div>
+							</MudNavLink>
+						}
+					</ChildContent>
+				</MudNavGroup>
+			}
+		}
 
-        <MudTooltip Text="Qazax dilində söz ehtiyatınızı artırmaq üçün siyahılar." Placement="Placement.Right">
-            <MudNavLink Href="/vocabulary">
-                <MudIcon Icon="@_vocabularyIcon" Size="Size.Small" />
-                <div class="nav-content">
-                    <span class="nav-text">Lüğət</span>
-                </div>
-            </MudNavLink>
-        </MudTooltip>
+		<MudTooltip Text="Qazax dilində söz ehtiyatınızı artırmaq üçün siyahılar." Placement="Placement.Right">
+			<MudNavLink Href="/vocabulary">
+				<MudIcon Icon="@_vocabularyIcon" Size="Size.Small" />
+				<div class="nav-content">
+					<span class="nav-text">Lüğət</span>
+				</div>
+			</MudNavLink>
+		</MudTooltip>
 
-    </MudNavMenu>
+		<MudTooltip Text="Qazax sözlərini klaviatura ilə yazaraq məşq edin." Placement="Placement.Right">
+			<MudNavLink Href="/practice">
+				<MudIcon Icon="@_keyboardIcon" Size="Size.Small" />
+				<div class="nav-content">
+					<span class="nav-text">Məşq</span>
+				</div>
+			</MudNavLink>
+		</MudTooltip>
+
+	</MudNavMenu>
 </MudPaper>
 
 @code {
-    private readonly string _homeIcon = CustomIcons.Home;
-    private readonly string _vocabularyIcon = CustomIcons.Vocabulary;
-    private readonly int _maxSectionsToExpand = 6;
+	private readonly string _homeIcon = CustomIcons.Home;
+	private readonly string _vocabularyIcon = CustomIcons.Vocabulary;
+	private readonly string _keyboardIcon = CustomIcons.Keyboard;
 
-    private HttpClient? _httpClient;
-    private Dictionary<CategoryDto, bool> _expandedGroups = new();
+	private readonly int _maxSectionsToExpand = 6;
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            _httpClient ??= HttpClientFactory.CreateClient("LearnKazakhApi");
+	private HttpClient? _httpClient;
+	private Dictionary<CategoryDto, bool> _expandedGroups = new();
 
-            var response = await _httpClient.GetFromJsonAsync<ApiResponse<List<CategoryDto>>>("category");
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			_httpClient ??= HttpClientFactory.CreateClient("LearnKazakhApi");
 
-            if (response?.Data == null)
-            {
-                return;
-            }
+			var response = await _httpClient.GetFromJsonAsync<ApiResponse<List<CategoryDto>>>("category");
 
-            _expandedGroups = response.Data.ToDictionary
-            (
-                c => c,
-                c => c.Sections.Count < _maxSectionsToExpand
-            );
-        }
-        catch (Exception )
-        {
-            Snackbar.Add($"Failed to load menu items.", Severity.Error);
-        }
-    }
+			if (response?.Data == null)
+			{
+				return;
+			}
+
+			_expandedGroups = response.Data.ToDictionary
+			(
+				c => c,
+				c => c.Sections.Count < _maxSectionsToExpand
+			);
+		}
+		catch (Exception)
+		{
+			Snackbar.Add($"Failed to load menu items.", Severity.Error);
+		}
+	}
 }
 
 <style>
-    .mud-navmenu .mud-tooltip-root.mud-tooltip-inline {
-        display: block;
-    }
+	.mud-navmenu .mud-tooltip-root.mud-tooltip-inline {
+		display: block;
+	}
 
-    .mud-nav-item a {
-        text-decoration: none;
-    }
+	.mud-nav-item a {
+		text-decoration: none;
+	}
 
-    .mud-nav-link-text {
-        display: flex;
-        align-items: center;
-        font-size: 0.9rem;
-    }
+	.mud-nav-link-text {
+		display: flex;
+		align-items: center;
+		font-size: 0.9rem;
+	}
 
-        .mud-nav-link-text span {
-            flex: 1;
-            margin-left: 10px;
-            text-align: start;
-        }
+		.mud-nav-link-text span {
+			flex: 1;
+			margin-left: 10px;
+			text-align: start;
+		}
 
-        .mud-nav-link-text svg {
-            color: #111827;
-        }
+		.mud-nav-link-text svg {
+			color: #111827;
+		}
 </style>

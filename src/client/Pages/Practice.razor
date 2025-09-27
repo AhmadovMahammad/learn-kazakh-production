@@ -1,0 +1,225 @@
+﻿@page "/practice"
+
+@inject IHttpClientFactory HttpClientFactory
+@inject ISnackbar Snackbar
+@inject ILocalStorageService LocalStorage
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-8 mt-2">
+	<MudText Typo="Typo.h3" Align="Align.Left" Style="font-weight: 600;">
+		Qazax dili məşqi
+	</MudText>
+
+	<MudText Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4" Style="color:#4a5565;">
+		Klaviatura ilə Qazax sözlərini yazmağı öyrənin və lüğət biliklərinizi artırın
+	</MudText>
+
+	@if (!_isLoaded)
+	{
+		<MudPaper Elevation="1" Class="pa-6 mb-6" Style="text-align:center; border-radius:8px">
+			<MudSkeleton Width="40%" Height="24px" Class="mb-4 mx-auto" />
+			<MudSkeleton Width="60%" Height="28px" Class="mb-4 mx-auto" />
+			<MudSkeleton Width="80%" Height="40px" Class="mx-auto" />
+		</MudPaper>
+	}
+	else if (_currentWord != null)
+	{
+		<MudPaper Elevation="2" Class="pa-6 mb-6" Style="text-align:center; border-radius:8px">
+			<MudText Typo="Typo.h6" Class="mb-2" Style="color:#4a5565;">
+				Bu sözü Qazax dilində yazın:
+			</MudText>
+			<MudText Typo="Typo.h5" Class="mb-4" Style="font-weight:600; color:#1c398e;">
+				@_currentWord.WordAzerbaijani
+			</MudText>
+
+			<MudTextField @bind-Value="_userInput"
+						  Placeholder="Qazax tərcüməsini yazın..."
+						  Variant="Variant.Outlined"
+						  FullWidth="true"
+						  Class="mb-4"
+						  OnKeyDown="OnEnterKey" />
+
+			@if (_answerChecked)
+			{
+				@if (_isCorrect)
+				{
+					<MudAlert Severity="Severity.Success" Class="mb-3">Düzdür!</MudAlert>
+				}
+				else
+				{
+					<MudAlert Severity="Severity.Error" Class="mb-3">Səhv!</MudAlert>
+					<MudText Typo="Typo.body1" Class="mt-2" Style="color:#1c398e; font-weight:600;">
+						Doğru cavab: @_currentWord.WordKazakh
+					</MudText>
+				}
+
+				<MudButton Variant="Variant.Filled"
+						   Color="Color.Dark"
+						   Class="mt-4"
+						   OnClick="async () => await NextWordAsync()">
+					Növbəti söz
+				</MudButton>
+			}
+			else
+			{
+				<MudButton Variant="Variant.Filled"
+						   Color="Color.Dark"
+						   OnClick="CheckAnswer">
+					Yoxla
+				</MudButton>
+			}
+		</MudPaper>
+	}
+	else
+	{
+		<MudPaper Class="pa-6" Style="border-radius:12px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+			<MudText Typo="Typo.h6" Class="mb-2" Style="color:#4a5565;">
+				Təbriklər!
+			</MudText>
+			<MudText Typo="Typo.body1" Style="color:#1c398e;">
+				Bu gün üçün bütün sözlər bitdi. 6 saat sonra yeni təcrübə ilə davam edin.
+			</MudText>
+		</MudPaper>
+	}
+</MudContainer>
+
+@code {
+	private HttpClient? _httpClient;
+	private List<VocabularyDto> _words = [];
+	private HashSet<Guid> _seenWords = [];
+	private VocabularyDto? _currentWord;
+	private string _userInput = string.Empty;
+
+	private bool _answerChecked;
+	private bool _isCorrect;
+	private bool _isLoaded;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_httpClient ??= HttpClientFactory.CreateClient("LearnKazakhApi");
+
+		try
+		{
+			var cachedData = await LocalStorage.GetItemAsync<CachedPractice>("practiceCache");
+			if (cachedData != null && (DateTime.UtcNow - cachedData.CachedAt).TotalHours < 6)
+			{
+				_words = cachedData.Words;
+				_seenWords = cachedData.SeenWords;
+				_isLoaded = true;
+				PickNextWord();
+				return;
+			}
+
+			var response = await _httpClient.GetFromJsonAsync<ApiPagedResponse<VocabularyDto>>($"vocabulary?offset=0");
+			if (response?.Success == true && response.Data?.Items != null)
+			{
+				_words = response.Data.Items;
+				_seenWords.Clear();
+				_isLoaded = true;
+
+				await LocalStorage.SetItemAsync("practiceCache", new CachedPractice
+				{
+					Words = _words,
+					SeenWords = _seenWords,
+					CachedAt = DateTime.UtcNow
+				});
+
+				PickNextWord();
+			}
+			else
+			{
+				_isLoaded = true;
+				_currentWord = null;
+			}
+		}
+		catch
+		{
+			_isLoaded = true;
+			Snackbar.Add("Failed to load practice words.", Severity.Error);
+		}
+	}
+
+	private void CheckAnswer()
+	{
+		if (_currentWord == null) return;
+
+		_answerChecked = true;
+		_isCorrect = string.Equals(_userInput.Trim(),
+								   _currentWord.WordKazakh,
+								   StringComparison.OrdinalIgnoreCase);
+	}
+
+	private async Task NextWordAsync()
+	{
+		try
+		{
+			ArgumentNullException.ThrowIfNull(_httpClient, nameof(_httpClient));
+
+			_userInput = string.Empty;
+			_answerChecked = false;
+			_isCorrect = false;
+
+			if (_seenWords.Count < _words.Count)
+			{
+				PickNextWord();
+			}
+			else
+			{
+				var response = await _httpClient.GetFromJsonAsync<ApiPagedResponse<VocabularyDto>>($"vocabulary?offset={_seenWords.Count}");
+				if (response?.Success == true && response.Data?.Items != null && response.Data.Items.Any())
+				{
+					_words.AddRange(response.Data.Items);
+					PickNextWord();
+				}
+				else
+				{
+					_currentWord = null;
+				}
+			}
+
+			await LocalStorage.SetItemAsync("practiceCache", new CachedPractice
+			{
+				Words = _words,
+				SeenWords = _seenWords,
+				CachedAt = DateTime.UtcNow
+			});
+		}
+		catch
+		{
+			Snackbar.Add("Failed to load vocabulary.", Severity.Error);
+		}
+	}
+
+	private void PickNextWord()
+	{
+		if (_seenWords.Count < _words.Count)
+		{
+			do
+			{
+				int index = Random.Shared.Next(_words.Count);
+				_currentWord = _words[index];
+			}
+			while (_seenWords.Contains(_currentWord.Id));
+
+			_seenWords.Add(_currentWord.Id);
+		}
+		else
+		{
+			_currentWord = null;
+		}
+	}
+
+	private void OnEnterKey(KeyboardEventArgs e)
+	{
+		if (e.Key == "Enter" && !_answerChecked)
+		{
+			CheckAnswer();
+		}
+	}
+
+	public class CachedPractice
+	{
+		public List<VocabularyDto> Words { get; set; } = new();
+		public HashSet<Guid> SeenWords { get; set; } = new();
+		public DateTime CachedAt { get; set; }
+	}
+}
